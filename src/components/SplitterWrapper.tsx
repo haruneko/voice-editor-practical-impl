@@ -30,7 +30,7 @@ type SplitterWrapperProps = {
   height: number;
   x: number;
   onWidthChanged?: (width: number) => void;
-  onDevidedAt?: (x: number) => void;
+  onDevidedAt?: (ratio: number) => void;
 }
 
 const SplitterWrapper = (props: React.PropsWithChildren<SplitterWrapperProps>) => {
@@ -51,7 +51,7 @@ const SplitterWrapper = (props: React.PropsWithChildren<SplitterWrapperProps>) =
   }
   const handleOnDoubleClicked = (e: React.MouseEvent<HTMLDivElement>) => {
     if(props.onDevidedAt) {
-      props.onDevidedAt(props.width - (props.x - e.clientX));
+      props.onDevidedAt((props.width - (props.x - e.clientX)) / props.width);
     }
   };
   return  <>

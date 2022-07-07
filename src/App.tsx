@@ -14,13 +14,9 @@ type Segment = {
   msLength: number;
 }
 
-type Voice = {
-  waveform: uzumejs.Waveform;
-  segments: Segment[];
-};
-
 const App = () => {
-  const [voice, setVoice] = useState<Voice>();
+  const [waveform, setWaveform] = useState<uzumejs.Waveform>();
+  const [segments, setSegments] = useState<Segment[]>();
   const uzume = useMemo(async () => await uzumejs.default({ locateFile: () => uzumejsWasm }), []);
   const context = useMemo(() =>  new AudioContext(), []);
 
@@ -33,8 +29,8 @@ const App = () => {
       const u = await uzume;
       const maybeWaveform = u.CreateWaveformFrom(buffer.getChannelData(0), buffer.sampleRate);
       if(maybeWaveform !== null) {
-        setVoice( { waveform: maybeWaveform,
-          segments: [ {
+        setWaveform(maybeWaveform);
+        setSegments( [ {
             msBegin: 0,
             msEnd: maybeWaveform.msLength() / 2,
             msLength: maybeWaveform.msLength() / 2
@@ -42,21 +38,45 @@ const App = () => {
             msBegin: maybeWaveform.msLength() / 2,
             msEnd: maybeWaveform.msLength(),
             msLength: maybeWaveform.msLength() / 2
-          } ] }
+          } ]
         );
       }
     }
   }
-
+  const handleSegmentChange = (index: number, width: number) => {
+    if(!segments || segments.length === 0) return;
+    const s = Array.from(segments);
+    s[index].msLength = width * 2;
+    setSegments(s);
+  }
+  const handleSegmentDevision = (index: number, ratio: number) => {
+    console.log(index, ratio);
+    if(!segments || segments.length === 0) return;
+    const s: Segment[] = [];
+    for(let i = 0; i < segments.length; i++) {
+      if(i === index) {
+        const cur = segments[i];
+        s.push({msBegin: cur.msBegin, msLength: cur.msLength * ratio, msEnd: cur.msBegin + (cur.msEnd - cur.msBegin) * ratio});
+        s.push({msBegin: cur.msBegin + (cur.msEnd - cur.msBegin) * ratio, msLength: cur.msLength - cur.msLength * ratio, msEnd: cur.msEnd})
+      } else {
+        s.push(segments[i]);
+      }
+    }
+    setSegments(s);
+  }
   return (
     <div className="App">
       <input type="file" onChange={handleChangeFile} />
       {
-        voice &&
-          <Splitter segments={voice.segments.map(v => { return { width: v.msLength / 2 } })} height={241}>
+        waveform && segments && segments.length > 0 &&
+          <Splitter
+              segments={segments.map(v => { return { width: v.msLength / 2 } })}
+              height={241}
+              onSegmentChanged={handleSegmentChange}
+              onSegmentDevided={handleSegmentDevision}>
             {
-              voice.segments.map((s, i) =>
-                <Waveform msStart={s.msBegin} msEnd={s.msEnd} fetcher={() => voice.waveform} width={Math.floor(s.msLength/2)} height={240}
+              segments.map((s, i) =>
+                <Waveform msStart={s.msBegin} msEnd={s.msEnd} fetcher={() => waveform} width={Math.floor(s.msLength/2)} height={240}
                   lightColor={"#888888"} darkColor={"#000000"} axisColor={"#000000"} backgroundColor={"#ffffff"} key={i}/>)
             }
           </Splitter>
