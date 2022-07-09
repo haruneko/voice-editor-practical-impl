@@ -9,6 +9,12 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <App />
+    <div>
+      <p>「ファイルを選択」から声を録音した wav ファイル（サンプリング周波数 44.1kHz, 16bit のもの）を選択してください。</p>
+      <p>表示された波形をダブルクリックで波形を分割、分割された波形の右端をドラッグすることで分割された部分の再生速度を変更できます。</p>
+      <p>「再生」ボタンで音声を再生、「保存」ボタンで output.wav として 16 bit の wav ファイルに保存できます。</p>
+      <p>動作保証はしませんので壊れていたら直してください。</p>
+    </div>
   </React.StrictMode>
 );
 
