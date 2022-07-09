@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import * as uzumejs from "uzumejs";
+import audioBufferToWav from "audiobuffer-to-wav"
 import Waveform from "./components/Waveform";
 import Splitter from "./components/Splitter"
 import useUzume from "./getUzume"
@@ -45,10 +46,9 @@ const App = () => {
       }
     }
   }
-  const handlePlayStart = async() => {
-    if(!appState || appState.segments.length === 0) return;
+  const calculateWaveArray = async () => {
+    if(!appState || appState.segments.length === 0) return new Float32Array();
     const u = await uzume;
-
     const toBeDeleted = new Array<{delete: () => void}>();
     const ltams = appState.segments.map(v => new u.LinearTimeAxisMap(v.msBegin, v.msEnd, v.msLength))
     const sss = ltams.map(v => new u.StretchedPartialSpectrogram(appState.spectrogram, v));
@@ -57,8 +57,18 @@ const App = () => {
     const synth = new u.SynthesizeWaveformWithWORLD();
     const out = new u.Waveform(Math.floor(asa.msLength() / 1000.0 * 44100), 44100);
     synth.synthesize(out, asa);
+    const result = u.ArrayFromWaveform(out);
+    ltams.forEach(v => toBeDeleted.push(v));
+    sss.forEach(v => toBeDeleted.push(v));
+    toBeDeleted.push(sv, asa, synth, out);
+    toBeDeleted.forEach(v => v.delete());
+    return result;
+  }
+  const handlePlayStart = async() => {
+    if(!appState || appState.segments.length === 0) return;
 
-    const buf = u.ArrayFromWaveform(out);
+    const buf = await calculateWaveArray();
+
     if(context.state === "suspended") {
       context.resume();
     }
@@ -67,11 +77,21 @@ const App = () => {
     sourceNode.buffer.copyToChannel(buf, 0);
     sourceNode.connect(context.destination);
     sourceNode.start();
-
-    ltams.forEach(v => toBeDeleted.push(v));
-    sss.forEach(v => toBeDeleted.push(v));
-    toBeDeleted.push(sv, asa, synth, out);
-    toBeDeleted.forEach(v => v.delete());
+  }
+  const handleWaveSave = async () => {
+    if(!appState || appState.segments.length === 0) return;
+    const buf = await calculateWaveArray();
+    const abuf = new AudioBuffer({length: buf.length, sampleRate: 44100});
+    abuf.copyToChannel(buf, 0)
+    const wavBuf = audioBufferToWav(abuf);
+    const dataURI = URL.createObjectURL(new Blob([wavBuf], { type: "audio/wav" }));
+    const a = document.createElement("a");
+    document.body.appendChild(a);
+    a.download = 'output.wav';
+    a.href = dataURI;
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(dataURI);
   }
   const handleSegmentChange = (index: number, width: number) => {
     if(!appState || appState.segments.length === 0) return;
@@ -97,6 +117,7 @@ const App = () => {
     <div className="App">
       <input type="file" onChange={handleChangeFile} />
       <input type="button" onClick={handlePlayStart} value="再生" />
+      <input type="button" onClick={handleWaveSave} value="保存" />
       {
         appState && appState.waveform && appState.segments.length > 0 &&
           <Splitter
