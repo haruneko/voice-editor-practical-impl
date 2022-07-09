@@ -22,7 +22,7 @@ const SplitterContent = styled.div.attrs<{width: number, height: number}>((props
 })<{width: number, height: number}>`
   height: ${(props) => `${props.height}px`};
   flex-shrink: 0;
-  border: 0px;
+  border-right: 1px solid black;
 `;
 
 type SplitterWrapperProps = {
@@ -64,7 +64,7 @@ const SplitterWrapper = (props: React.PropsWithChildren<SplitterWrapperProps>) =
               {props.children}
             </SplitterContent>
             {props.resizable &&
-                <SplitterGutter className="splitter-gutter" x={props.x + diff} height={props.height} draggable={true} onDrag={handleOnDrag} onDragStart={handleOnDragStart} onDragEnd={handleOnDragEnd}/>
+              <SplitterGutter className="splitter-gutter" x={props.x + diff} height={props.height} draggable={true} onDrag={handleOnDrag} onDragStart={handleOnDragStart} onDragEnd={handleOnDragEnd}/>
             }
           </>
 }
