@@ -2,11 +2,7 @@ import React, { useMemo, useState } from 'react';
 import * as uzumejs from "uzumejs";
 import Waveform from "./components/Waveform";
 import Splitter from "./components/Splitter"
-
-// Required to let webpack 4 know it needs to copy the wasm file to our assets
-// @ts-ignore
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import uzumejsWasm from "!!file-loader?name=uzumewasm-[contenthash].wasm!uzumejs/resources/uzumewasm.wasm";
+import useUzume from "./getUzume"
 
 type Segment = {
   msBegin: number;
@@ -17,7 +13,7 @@ type Segment = {
 const App = () => {
   const [waveform, setWaveform] = useState<uzumejs.Waveform>();
   const [segments, setSegments] = useState<Segment[]>();
-  const uzume = useMemo(async () => await uzumejs.default({ locateFile: () => uzumejsWasm }), []);
+  const uzume = useUzume();
   const context = useMemo(() =>  new AudioContext(), []);
 
   const handleChangeFile: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
@@ -50,7 +46,6 @@ const App = () => {
     setSegments(s);
   }
   const handleSegmentDevision = (index: number, ratio: number) => {
-    console.log(index, ratio);
     if(!segments || segments.length === 0) return;
     const s: Segment[] = [];
     for(let i = 0; i < segments.length; i++) {

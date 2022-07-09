@@ -1,9 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import SplitterWrapper from "./SplitterWrapper"
-
-type SplitterSegment = {
-  width: number;
-}
 
 type SplitterProps = {
   segments: { width: number; }[];
@@ -35,6 +31,7 @@ const Splitter = (props: React.PropsWithChildren<SplitterProps>) => {
                     onWidthChanged={handleWidthChanged(i)}
                     onDevidedAt={handleDevided(i)}
                     key={i}
+                    resizable={true}
                   >{v}</SplitterWrapper>
               })
             }

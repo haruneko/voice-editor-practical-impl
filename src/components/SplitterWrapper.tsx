@@ -29,6 +29,7 @@ type SplitterWrapperProps = {
   width: number;
   height: number;
   x: number;
+  resizable?: boolean;
   onWidthChanged?: (width: number) => void;
   onDevidedAt?: (ratio: number) => void;
 }
@@ -55,10 +56,16 @@ const SplitterWrapper = (props: React.PropsWithChildren<SplitterWrapperProps>) =
     }
   };
   return  <>
-            <SplitterContent className="splitter-content" width={props.width + diff} height={props.height} onDoubleClick={handleOnDoubleClicked}>
+            <SplitterContent
+                className="splitter-content"
+                width={props.width + diff}
+                height={props.height}
+                onDoubleClick={props.resizable ? handleOnDoubleClicked : undefined}>
               {props.children}
             </SplitterContent>
-            <SplitterGutter className="splitter-gutter" x={props.x + diff} height={props.height} draggable={true} onDrag={handleOnDrag} onDragStart={handleOnDragStart} onDragEnd={handleOnDragEnd}/>
+            {props.resizable &&
+                <SplitterGutter className="splitter-gutter" x={props.x + diff} height={props.height} draggable={true} onDrag={handleOnDrag} onDragStart={handleOnDragStart} onDragEnd={handleOnDragEnd}/>
+            }
           </>
 }
 
