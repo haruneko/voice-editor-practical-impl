@@ -15,33 +15,33 @@ type VoiceSynthesizerProps = {
   mode: "play" | "save"
 }
 
+const calculateWaveArray = (u: uzumejs.UzumeJs, props: VoiceSynthesizerProps) => {
+  const toBeDeleted = new Array<{delete: () => void}>();
+  const ltams = props.segments.map(v => new u.LinearTimeAxisMap(v.msBegin, v.msEnd, v.msLength))
+  const sss = ltams.map(v => new u.StretchedPartialSpectrogram(props.spectrogram, v));
+  const sv = sss.reduce((prev: uzumejs.SpectrogramVector, cur) => { prev.push_back(cur); return prev;}, new u.SpectrogramVector());
+  const asa = u.ArraySpectrogramAggregator.from(sv);
+  const synth = new u.SynthesizeWaveformWithWORLD();
+  const out = new u.Waveform(Math.floor(asa.msLength() / 1000.0 * 44100), 44100);
+  synth.synthesize(out, asa);
+  const result = u.ArrayFromWaveform(out);
+  ltams.forEach(v => toBeDeleted.push(v));
+  sss.forEach(v => toBeDeleted.push(v));
+  toBeDeleted.push(sv, asa, synth, out);
+  toBeDeleted.forEach(v => v.delete());
+  return result;
+}
+
 const VocalSynthesizer: React.FC<VoiceSynthesizerProps> = (props) => {
   const [disabled, setDisabled] = useState(false);
   const uzume = getUzume();
   const context = new AudioContext();
 
-  const calculateWaveArray = async () => {
-    if(!props || props.segments.length === 0) return new Float32Array();
-    const u = await uzume;
-    const toBeDeleted = new Array<{delete: () => void}>();
-    const ltams = props.segments.map(v => new u.LinearTimeAxisMap(v.msBegin, v.msEnd, v.msLength))
-    const sss = ltams.map(v => new u.StretchedPartialSpectrogram(props.spectrogram, v));
-    const sv = sss.reduce((prev: uzumejs.SpectrogramVector, cur) => { prev.push_back(cur); return prev;}, new u.SpectrogramVector());
-    const asa = u.ArraySpectrogramAggregator.from(sv);
-    const synth = new u.SynthesizeWaveformWithWORLD();
-    const out = new u.Waveform(Math.floor(asa.msLength() / 1000.0 * 44100), 44100);
-    synth.synthesize(out, asa);
-    const result = u.ArrayFromWaveform(out);
-    ltams.forEach(v => toBeDeleted.push(v));
-    sss.forEach(v => toBeDeleted.push(v));
-    toBeDeleted.push(sv, asa, synth, out);
-    toBeDeleted.forEach(v => v.delete());
-    return result;
-  }
-  const handlePlayStart = async() => {
+  const handlePlayStart = async () => {
     if(!props || props.segments.length === 0) return;
     setDisabled(true);
-    const buf = await calculateWaveArray();
+    const u = await uzume;
+    const buf = calculateWaveArray(u, props);
     if(context.state === "suspended") {
       context.resume();
     }
@@ -55,7 +55,8 @@ const VocalSynthesizer: React.FC<VoiceSynthesizerProps> = (props) => {
   const handleWaveSave = async () => {
     if(!props || props.segments.length === 0) return;
     setDisabled(true);
-    const buf = await calculateWaveArray();
+    const u = await uzume;
+    const buf = calculateWaveArray(u, props);
     const abuf = new AudioBuffer({length: buf.length, sampleRate: 44100});
     abuf.copyToChannel(buf, 0)
     const wavBuf = audioBufferToWav(abuf);
