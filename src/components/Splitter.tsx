@@ -8,7 +8,7 @@ type SplitterProps = {
   onSegmentDevided?: (index: number, x: number) => void
 }
 
-const Splitter = (props: React.PropsWithChildren<SplitterProps>) => {
+const Splitter: React.FC<React.PropsWithChildren<SplitterProps>> = (props) => {
   const handleWidthChanged = (index: number) => (width: number) => {
     if(props.onSegmentChanged) {
       props.onSegmentChanged(index, width < 1 ? 1: width);
