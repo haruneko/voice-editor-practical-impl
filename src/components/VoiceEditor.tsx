@@ -1,7 +1,8 @@
 import React from "react";
-import * as uzumejs from "uzumejs"
-import { Segments } from "../data"
+import * as uzumejs from "uzumejs";
+import { Segments } from "../data";
 import Splitter from "./Splitter";
+import ControlChangeView from "./ControlChangeView";
 import PartialWaveformView from "./PartialWaveformView";
 
 type VoiceEditorProps = {
@@ -24,19 +25,35 @@ const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
     s.devideAt(index, relativePosition);
     if(props.onSegmentsChanged) { props.onSegmentsChanged(s); }
   }
+  const widthFrom = (msLength: number) => msLength / props.msPerPixel
   return (
     <>
       {
         props.segments.length() > 0 &&
           <Splitter
               segments={props.segments.data().map(v => { return { width: v.msLength / props.msPerPixel }; })}
-              height={241}
+              height={500}
               onSegmentChanged={handleSegmentChange}
               onSegmentDevided={handleSegmentDevision}>
             {
               props.segments.data().map((s, i) =>
-                <PartialWaveformView msStart={s.msBegin} msEnd={s.msEnd} fetcher={() => props.waveform} width={Math.floor(s.msLength/props.msPerPixel)} height={240}
-                  lightColor={"#888888"} darkColor={"#000000"} axisColor={"#000000"} backgroundColor={"#ffffff"} key={i}/>)
+                <>
+                  <PartialWaveformView
+                    msStart={s.msBegin} msEnd={s.msEnd}
+                    fetcher={() => props.waveform}
+                    width={widthFrom(s.msLength)}
+                    height={240}
+                    lightColor={"#888888"} darkColor={"#000000"} axisColor={"#000000"} backgroundColor={"#ffffff"} key={i}/>
+                  <ControlChangeView
+                    width={widthFrom(s.msLength)}
+                    height={240}
+                    minimumValue={0.5}
+                    maximumValue={2.0}
+                    scale={"log"}
+                    controlChange={[{position: 0, ratio: 1}, {position: 1, ratio: 1}]}
+                  />
+                </>
+              )
             }
           </Splitter>
       }
