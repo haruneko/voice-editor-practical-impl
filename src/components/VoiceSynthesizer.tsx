@@ -1,23 +1,18 @@
-import React, { useState } from "react"
-import * as uzumejs from "uzumejs"
-import audioBufferToWav from "audiobuffer-to-wav"
-import getUzume from "../getUzume"
-
-type Segment = {
-  msBegin: number;
-  msEnd: number;
-  msLength: number;
-}
+import React, { useState } from "react";
+import * as uzumejs from "uzumejs";
+import audioBufferToWav from "audiobuffer-to-wav";
+import { Segments } from "../data";
+import getUzume from "../getUzume";
 
 type VoiceSynthesizerProps = {
-  segments: Segment[];
+  segments: Segments;
   spectrogram: uzumejs.Spectrogram;
   mode: "play" | "save"
 }
 
 const calculateWaveArray = (u: uzumejs.UzumeJs, props: VoiceSynthesizerProps) => {
   const toBeDeleted = new Array<{delete: () => void}>();
-  const ltams = props.segments.map(v => new u.LinearTimeAxisMap(v.msBegin, v.msEnd, v.msLength))
+  const ltams = props.segments.data().map(v => new u.LinearTimeAxisMap(v.msBegin, v.msEnd, v.msLength))
   const sss = ltams.map(v => new u.StretchedPartialSpectrogram(props.spectrogram, v));
   const sv = sss.reduce((prev: uzumejs.SpectrogramVector, cur) => { prev.push_back(cur); return prev;}, new u.SpectrogramVector());
   const asa = u.ArraySpectrogramAggregator.from(sv);
@@ -38,7 +33,7 @@ const VocalSynthesizer: React.FC<VoiceSynthesizerProps> = (props) => {
   const context = new AudioContext();
 
   const handlePlayStart = async () => {
-    if(!props || props.segments.length === 0) return;
+    if(!props || props.segments.length() === 0) return;
     setDisabled(true);
     const u = await uzume;
     const buf = calculateWaveArray(u, props);
@@ -53,7 +48,7 @@ const VocalSynthesizer: React.FC<VoiceSynthesizerProps> = (props) => {
     setDisabled(false);
   }
   const handleWaveSave = async () => {
-    if(!props || props.segments.length === 0) return;
+    if(!props || props.segments.length() === 0) return;
     setDisabled(true);
     const u = await uzume;
     const buf = calculateWaveArray(u, props);
