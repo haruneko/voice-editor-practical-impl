@@ -38,21 +38,21 @@ const SplitterWrapper = (props: React.PropsWithChildren<SplitterWrapperProps>) =
   const [dragStartX, setDragStartX] = useState(0);
   const [diff, setDiff] = useState(0);
 
-  const handleOnDragStart = ({ clientX }: React.DragEvent<HTMLDivElement>) => {
-    setDragStartX(clientX);
+  const handleOnDragStart = ({ pageX }: React.DragEvent<HTMLDivElement>) => {
+    setDragStartX(pageX);
   }
-  const handleOnDrag = ({ clientX }: React.DragEvent<HTMLDivElement>) => {
-    setDiff(clientX - dragStartX);
+  const handleOnDrag = ({ pageX }: React.DragEvent<HTMLDivElement>) => {
+    setDiff(pageX - dragStartX);
   };
-  const handleOnDragEnd = ({ clientX }: React.DragEvent<HTMLDivElement>) => {
+  const handleOnDragEnd = ({ pageX }: React.DragEvent<HTMLDivElement>) => {
     if(props.onWidthChanged) {
-      props.onWidthChanged(props.width + (clientX - dragStartX));
+      props.onWidthChanged(props.width + (pageX - dragStartX));
     };
     setDiff(0)
   }
   const handleOnDoubleClicked = (e: React.MouseEvent<HTMLDivElement>) => {
     if(props.onDevidedAt) {
-      props.onDevidedAt((props.width - (props.x - e.clientX)) / props.width);
+      props.onDevidedAt((props.width - (props.x - e.pageX)) / props.width);
     }
   };
   return  <>
