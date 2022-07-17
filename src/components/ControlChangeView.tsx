@@ -10,7 +10,6 @@ type ControlChangeEditorProps = {
   controlChange: ControlPoint[];
   width: number;
   height: number;
-  scale : "log" | "linear";
   minimumValue: number;
   maximumValue: number;
   edittable?: boolean;
@@ -18,32 +17,30 @@ type ControlChangeEditorProps = {
 }
 
 const ContrlChangeView: React.FC<ControlChangeEditorProps> = (props) => {
-  const xOf = (position: number) => props.width * position;
-  const yOf = (ratio: number) => {
-    if(props.scale === "linear") {
-      return (props.maximumValue - ratio) / (props.maximumValue - props.minimumValue) * props.height;
-    } else if (props.scale === "log") {
-      return (Math.log(props.maximumValue) - Math.log(ratio)) / (Math.log(props.maximumValue) - Math.log(props.minimumValue)) * props.height;
-    }
-    return 0.0;
-  }
-  const positionOf = (x: number) => x / props.width;
-  const ratioOf = (y: number) => {
-    if(props.scale === "linear") {
-      const interop = y / props.height;
-      return props.maximumValue * (1 - interop) + props.minimumValue * interop;
-    } else if (props.scale === "log") {
-      return props.minimumValue * Math.exp(y / props.height * (Math.log(props.maximumValue) - Math.log(props.minimumValue)));
-    }
-    return 0.0;
-  }
+  const yOf = (ratio: number) =>
+      1 - (Math.log(props.maximumValue) - Math.log(ratio)) / (Math.log(props.maximumValue) - Math.log(props.minimumValue));
+  const ratioOf = (y: number) =>
+      props.minimumValue * Math.exp(y * (Math.log(props.maximumValue) - Math.log(props.minimumValue)));
   const handlePointChange = (index: number) => (x: number, y: number) => {
-    props.controlChange[index] = { position: positionOf(x), ratio: ratioOf(y) };
+    props.controlChange[index] = { position: x, ratio: ratioOf(y) };
+    console.log(y, ratioOf(y), yOf(ratioOf(y)));
     if(props.onControlChangeChanged) { props.onControlChangeChanged(Array.from(props.controlChange)); }
   }
+  const minOf = (index: number) => index <= 0 ? {x: 0, y: 0}: index >= props.controlChange.length - 1 ? {x: 1, y: 0}: {x: props.controlChange[index - 1].position, y: 0};
+  const maxOf = (index: number) => index <= 0 ? {x: 0, y: 1}: index >= props.controlChange.length - 1 ? {x: 1, y: 1}: {x: props.controlChange[index + 1].position, y: 1};
   return  <>
-            <div style={{position: "absolute", width: `${props.width}px`, height: `${props.height}px`}}>
-              {props.controlChange.map((cp, i) => <ControlPointDraggable x={xOf(cp.position)} y={yOf(cp.ratio)} onPositionChanged={handlePointChange(i)}/>)}
+            <div style={{position: "relative", width: "100%", height: `${props.height}px`}}>
+              {props.controlChange.map((cp, i) => <ControlPointDraggable
+                                                    x={cp.position}
+                                                    y={yOf(cp.ratio)}
+                                                    minX={minOf(i).x}
+                                                    minY={minOf(i).y}
+                                                    maxX={maxOf(i).x}
+                                                    maxY={maxOf(i).y}
+                                                    clientWidth={props.width}
+                                                    clientHeight={props.height}
+                                                    onPositionChanged={handlePointChange(i)}
+                                                    key={`cpd-${i}`}/>)}
             </div>
           </>
 }

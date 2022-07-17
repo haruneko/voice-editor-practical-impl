@@ -27,9 +27,8 @@ export class ControlChange {
   }
   remove = (index:number) => {
     if(this.controlPoints.length <= 2) return;
-    this.controlPoints.
+    this.controlPoints.splice(index, 1);
   }
-  data = () => this.controlPoints;
 
-  private controlPoints: ControlPoint[] = [];
+  controlPoints: ControlPoint[] = [];
 }

@@ -43,14 +43,14 @@ const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
                     fetcher={() => props.waveform}
                     width={widthFrom(s.msLength)}
                     height={240}
-                    lightColor={"#888888"} darkColor={"#000000"} axisColor={"#000000"} backgroundColor={"#ffffff"} key={i}/>
+                    lightColor={"#888888"} darkColor={"#000000"} axisColor={"#000000"} backgroundColor={"#ffffff"} key={`pw-${i}`}/>
                   <ControlChangeView
                     width={widthFrom(s.msLength)}
                     height={240}
                     minimumValue={0.5}
                     maximumValue={2.0}
-                    scale={"log"}
                     controlChange={[{position: 0, ratio: 1}, {position: 1, ratio: 1}]}
+                    key={`cc-${i}`}
                   />
                 </>
               )

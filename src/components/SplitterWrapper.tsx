@@ -38,7 +38,7 @@ const SplitterWrapper = (props: React.PropsWithChildren<SplitterWrapperProps>) =
   const [dragStartX, setDragStartX] = useState(0);
   const [diff, setDiff] = useState(0);
 
-  const handleOnDragStart=({ clientX }: React.DragEvent<HTMLDivElement>) => {
+  const handleOnDragStart = ({ clientX }: React.DragEvent<HTMLDivElement>) => {
     setDragStartX(clientX);
   }
   const handleOnDrag = ({ clientX }: React.DragEvent<HTMLDivElement>) => {

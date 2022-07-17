@@ -30,7 +30,7 @@ const Splitter: React.FC<React.PropsWithChildren<SplitterProps>> = (props) => {
                     height={props.height}
                     onWidthChanged={handleWidthChanged(i)}
                     onDevidedAt={handleDevided(i)}
-                    key={i}
+                    key={`spl-${i}`}
                     resizable={true}
                   >{v}</SplitterWrapper>
               })
