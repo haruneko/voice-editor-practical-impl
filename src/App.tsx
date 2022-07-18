@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as uzumejs from "uzumejs";
-import { Segments } from "./data";
+import { ControlChange, Segments } from "./data";
 import VoiceEditor from "./components/VoiceEditor";
 import VoiceSynthesizer from './components/VoiceSynthesizer';
 import getUzume from "./getUzume";
@@ -27,7 +27,9 @@ const App = () => {
       segments: new Segments([ {
         msBegin: 0,
         msEnd: waveform.msLength(),
-        msLength: waveform.msLength()
+        msLength: waveform.msLength(),
+        f0ControlChange: new ControlChange(1, 1),
+        genControlChange: new ControlChange(1, 1)
       } ])
     });
     previousState?.waveform.delete();
