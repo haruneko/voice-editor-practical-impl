@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import * as uzumejs from "uzumejs";
 import VoiceSynthesizer from './components/VoiceSynthesizer';
 import Splitter from "./components/Splitter"
@@ -22,7 +22,6 @@ type AppState = {
 const App = () => {
   const [appState, setAppState] = useState<AppState>();
   const uzume = getUzume();
-  const context = useMemo(() => new AudioContext(), []);
 
   const handleVoiceLoad = async (waveform: uzumejs.Waveform) => {
     const u = await uzume;
