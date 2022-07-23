@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import * as uzumejs from "uzumejs";
 import VoiceSynthesizer from './components/VoiceSynthesizer';
 import Splitter from "./components/Splitter"
-import Waveform from "./components/Waveform";
+import PartialWaveformView from "./components/PartialWaveformView";
 import getUzume from "./getUzume"
 import VoiceLoader from './components/VoiceLoader';
+import PartialControlChangeView from './components/PartialControlChangeView';
 
 type Segment = {
   msBegin: number;
@@ -68,14 +69,23 @@ const App = () => {
         appState && appState.waveform && appState.segments.length > 0 &&
           <Splitter
               segments={appState.segments.map(v => { return { width: v.msLength / appState.msPerPixel } })}
-              height={241}
+              height={500}
               onSegmentChanged={handleSegmentChange}
               onSegmentDevided={handleSegmentDevision}>
             {
               appState.segments.map((s, i) =>
-                <Waveform msStart={s.msBegin} msEnd={s.msEnd} fetcher={() => appState.waveform} width={Math.floor(s.msLength/appState.msPerPixel)} height={240}
-                  lightColor={"#888888"} darkColor={"#000000"} axisColor={"#000000"} backgroundColor={"#ffffff"} key={i}/>)
-            }
+                <>
+                  <PartialWaveformView msStart={s.msBegin} msEnd={s.msEnd} fetcher={() => appState.waveform} width={Math.floor(s.msLength/appState.msPerPixel)} height={240}
+                    lightColor="#888888" darkColor="#000000" axisColor="#000000" backgroundColor="#ffffff" key={`pwv-${i}`}/>
+                  <div style={{height: "1px", backgroundColor: "black"}} />
+                  <PartialControlChangeView msStart={s.msBegin} msEnd={s.msEnd} width={Math.floor(s.msLength/appState.msPerPixel)} height={240}
+                    axisColor="#000000" backgroundColor="#ffffff" controlPointColor="#000000" key={`pccv-${i}`}
+                    fetcher={() => [{position: 0, ratio: 0}, {position: 0.33, ratio: 0.75}, {position: 0.66, ratio: -0.75}, {position: 1, ratio: 0}]}
+                    minRatio={-1} maxRatio={1}
+                  />
+                  <div style={{height: "1px", backgroundColor: "black"}} />
+                </>
+            )}
           </Splitter>
       }
     </div>

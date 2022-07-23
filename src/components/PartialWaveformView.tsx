@@ -67,8 +67,8 @@ export const PartialWaveformView: React.FC<PartialWaveformProps> = (props) => {
         }
     });
 
-    return  <div className="waveform-view" style={{flexShrink: 0, border: "0px", width: `100%`, height: `100%`}}>
-                <canvas ref={canvasRef} width={props.width} height={props.height} style={{width: "100%", height: "100%"}}/>
+    return  <div className="waveform-view" style={{flexShrink: 0, border: "0px", width: `100%`}}>
+                <canvas ref={canvasRef} width={props.width} height={props.height} style={{width: "100%", height: `${props.height}px`}}/>
             </div>
     ;
 };
