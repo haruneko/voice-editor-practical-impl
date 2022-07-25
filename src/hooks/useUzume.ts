@@ -7,12 +7,12 @@ import uzumejsWasm from "!!file-loader?name=uzumewasm-[contenthash].wasm!uzumejs
 
 let uzume: UzumeJs | null = null;
 
-const getUzume = async () => {
-    if(uzume) {
-        return uzume;
-    }
-    uzume = await  uzumejs({ locateFile: () => uzumejsWasm });
+const useUzume = async () => {
+  if (uzume) {
     return uzume;
-}
+  }
+  uzume = await uzumejs({ locateFile: () => uzumejsWasm });
+  return uzume;
+};
 
-export default getUzume;
+export default useUzume;

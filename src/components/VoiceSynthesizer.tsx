@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import * as uzumejs from "uzumejs"
 import audioBufferToWav from "audiobuffer-to-wav"
-import getUzume from "../getUzume"
+import useUzume from "../hooks/useUzume"
 
 type Segment = {
   msBegin: number;
@@ -34,7 +34,7 @@ const calculateWaveArray = (u: uzumejs.UzumeJs, props: VoiceSynthesizerProps) =>
 
 const VocalSynthesizer: React.FC<VoiceSynthesizerProps> = (props) => {
   const [disabled, setDisabled] = useState(false);
-  const uzume = getUzume();
+  const uzume = useUzume();
   const context = new AudioContext();
 
   const handlePlayStart = async () => {

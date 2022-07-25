@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Waveform } from "uzumejs"
-import getUzume from "../getUzume"
+import useUzume from "../hooks/useUzume"
 
 type VoiceLoaderProps = {
   onVoiceLoaded: (waveform: Waveform) => void;
@@ -8,7 +8,7 @@ type VoiceLoaderProps = {
 
 const VoiceLoader: React.FC<VoiceLoaderProps> = (props) => {
   const [disabled, setDisabled] = useState(false);
-  const uzume = getUzume();
+  const uzume = useUzume();
   const context = new AudioContext();
   const handleChangeFile: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
     const file = e?.target?.files?.item(0);

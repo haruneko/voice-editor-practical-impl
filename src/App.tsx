@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as uzumejs from "uzumejs";
 import VoiceSynthesizer from './components/VoiceSynthesizer';
-import getUzume from "./getUzume"
+import useUzume from "./hooks/useUzume"
 import VoiceLoader from './components/VoiceLoader';
 import VoiceEditor from './components/VoiceEditor';
 
@@ -29,7 +29,7 @@ type AppState = {
 
 const App = () => {
   const [appState, setAppState] = useState<AppState>();
-  const uzume = getUzume();
+  const uzume = useUzume();
 
   const handleVoiceLoad = async (waveform: uzumejs.Waveform) => {
     const u = await uzume;
