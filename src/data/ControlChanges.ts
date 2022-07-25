@@ -26,3 +26,19 @@ export const devideControlChange = (cc: ControlChange, position: number) => {
   front.push({position: 1, ratio: valueAt(cc, position)});
   return [front, rear];
 }
+
+export const moveControlPoint = (ccs: ControlChanges, ccIndex: number) => (cpIndex: number) => (position: number, ratio: number) => {
+  if(ccIndex < 0 || ccs.length <= ccIndex) return;
+  if(cpIndex < 0 || ccs[ccIndex].length <= cpIndex) return;
+  const result = structuredClone(ccs);
+  if(cpIndex === 0 && ccIndex !== 0) {
+    result[ccIndex][0] = {position: 0, ratio: ratio};
+    result[ccIndex - 1][ccs[ccIndex - 1].length - 1] = {position: 1, ratio: ratio}
+  } else if(cpIndex === ccs[ccIndex].length - 1 && ccIndex < ccs.length - 1) {
+    result[ccIndex][ccs[ccIndex].length - 1] = {position: 1, ratio: ratio};
+    result[ccIndex + 1][0] = {position: 0, ratio: ratio};
+  } else {
+    result[ccIndex][cpIndex] = {position: position, ratio: ratio};
+  }
+  return result;
+}
