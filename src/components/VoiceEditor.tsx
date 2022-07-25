@@ -1,6 +1,7 @@
-import React, { useState } from "react"
+import React, { useEffect } from "react"
 import * as uzumejs from "uzumejs";
-import { Segments, devide } from "../data";
+import { Segments } from "../data";
+import { useSegments } from "../hooks/useSegments";
 import PartialControlChangeView from "./PartialControlChangeView";
 import PartialWaveformView from "./PartialWaveformView";
 import Splitter from "./Splitter";
@@ -14,36 +15,22 @@ type VoiceEditorProps = {
 }
 
 const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
+  const [segments, changeSegmentLength, devideSegment] = useSegments(props.segments, props.onSegmentsChanged);
   const handleSegmentChange = (index: number, width: number) => {
-    if(props.segments.length === 0) return;
-    const s = Array.from(props.segments);
-    s[index].msLength = width * props.msPerPixel;
-    if(props.onSegmentsChanged) props.onSegmentsChanged(s);
-  }
-  const handleSegmentDevision = (index: number, ratio: number) => {
-    if(props.segments.length === 0) return;
-    const s: Segments = [];
-    for(let i = 0; i < props.segments.length; i++) {
-      if(i === index) {
-        const [front, rear] = devide(props.segments[i], ratio);
-        s.push(front, rear);
-      } else {
-        s.push(props.segments[i]);
-      }
-    }
-    if(props.onSegmentsChanged) props.onSegmentsChanged(s);
+    changeSegmentLength(index, width * props.msPerPixel);
   }
   return (
     <>
       {
-        props.segments.length > 0 &&
+        segments.length > 0 &&
           <Splitter
-              segments={props.segments.map(v => { return { width: v.msLength / props.msPerPixel } })}
+              elements={segments.map(v => { return { width: v.msLength / props.msPerPixel } })}
               height={500}
-              onSegmentChanged={handleSegmentChange}
-              onSegmentDevided={handleSegmentDevision}>
+              onElementChanged={handleSegmentChange}
+              onElementDevided={devideSegment}
+              resizable={true}>
             {
-              props.segments.map((s, i) =>
+              segments.map((s, i) =>
                 <>
                   <PartialWaveformView msStart={s.msBegin} msEnd={s.msEnd} fetcher={() => props.waveform} width={Math.floor(s.msLength / props.msPerPixel)} height={240}
                     lightColor="#888888" darkColor="#000000" axisColor="#000000" backgroundColor="#ffffff" key={`pwv-${i}`}/>

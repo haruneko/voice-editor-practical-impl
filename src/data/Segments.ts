@@ -36,7 +36,7 @@ const devideControlPoints = (cps: ControlPoints, position: number) => {
   return [front, rear];
 }
 
-export const devide: (segment: Segment, position: number) => [front: Segment, rear: Segment] = (segment, position) => {
+export const devideSegment: (segment: Segment, position: number) => [front: Segment, rear: Segment] = (segment, position) => {
   const [frontF0, rearF0] = devideControlPoints(segment.f0ControlPoints, position);
   const [frontGen, rearGen] = devideControlPoints(segment.genControlPoints, position);
   const front: Segment = {
