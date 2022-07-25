@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { devideSegment, Segments } from "../data";
+import { devideSegment, Segments } from "../data/Segments";
 
 export const useSegments: (_segments: Segments, onSegmentChanged?: (s: Segments) => void) => [
   Segments, (index: number, msLength: number) => void, (index: number, ratio: number) => void

@@ -1,6 +1,6 @@
-import React, { useEffect } from "react"
+import React from "react"
 import * as uzumejs from "uzumejs";
-import { Segments } from "../data";
+import { Segments } from "../data/Segments";
 import { useSegments } from "../hooks/useSegments";
 import PartialControlChangeView from "./PartialControlChangeView";
 import PartialWaveformView from "./PartialWaveformView";
@@ -35,7 +35,7 @@ const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
                   <PartialWaveformView msStart={s.msBegin} msEnd={s.msEnd} fetcher={() => props.waveform} width={Math.floor(s.msLength / props.msPerPixel)} height={240}
                     lightColor="#888888" darkColor="#000000" axisColor="#000000" backgroundColor="#ffffff" key={`pwv-${i}`}/>
                   <div style={{height: "1px", backgroundColor: "black"}} />
-                  <PartialControlChangeView msStart={s.msBegin} msEnd={s.msEnd} width={Math.floor(s.msLength/props.msPerPixel)} height={240}
+                  <PartialControlChangeView width={Math.floor(s.msLength/props.msPerPixel)} height={240}
                     axisColor="#000000" backgroundColor="#ffffff" controlPointColor="#000000" key={`pccv-${i}`}
                     fetcher={() => [{position: 0, ratio: 0}, {position: 0.33, ratio: 0.75}, {position: 0.66, ratio: -0.75}, {position: 1, ratio: 0}]}
                     minRatio={-1} maxRatio={1}

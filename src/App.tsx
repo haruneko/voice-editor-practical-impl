@@ -4,27 +4,16 @@ import VoiceSynthesizer from './components/VoiceSynthesizer';
 import useUzume from "./hooks/useUzume"
 import VoiceLoader from './components/VoiceLoader';
 import VoiceEditor from './components/VoiceEditor';
-
-type ControlPoint = {
-  position: number;
-  ratio: number;
-}
-
-type ControlPoints = ControlPoint[];
-
-type Segment = {
-  msBegin: number;
-  msEnd: number;
-  msLength: number;
-  f0ControlPoints: ControlPoints;
-  genControlPoints: ControlPoints;
-}
+import { Segments } from './data/Segments';
+import { ControlChanges } from './data/ControlChanges';
 
 type AppState = {
   waveform: uzumejs.Waveform;
   spectrogram: uzumejs.Spectrogram;
   msPerPixel: number;
-  segments: Segment[];
+  segments: Segments;
+  f0ControlChanges: ControlChanges;
+  genControlChanges: ControlChanges;
 }
 
 const App = () => {
@@ -41,15 +30,15 @@ const App = () => {
       segments: [ {
         msBegin: 0,
         msEnd: waveform.msLength(),
-        msLength: waveform.msLength(),
-        f0ControlPoints: [{position: 0, ratio: 1}, {position: 1, ratio: 1}],
-        genControlPoints: [{position: 0, ratio: 1}, {position: 1, ratio: 1}]
-      } ]
+        msLength: waveform.msLength()
+      } ],
+      f0ControlChanges: [],
+      genControlChanges: []
     });
     previousState?.waveform.delete();
     previousState?.spectrogram.delete();
   }
-  const handleSegmentsChange = (segments: Segment[]) => {
+  const handleSegmentsChange = (segments: Segments) => {
     if(appState) setAppState({ ...appState, segments: segments });
   }
   return (

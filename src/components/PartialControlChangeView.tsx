@@ -8,8 +8,6 @@ type ControlPoint = {
 
 type PartialControlChangeViewProps = {
   fetcher: () => ControlPoint[];
-  msStart: number;
-  msEnd: number;
   width: number;
   height: number;
   maxRatio: number;
