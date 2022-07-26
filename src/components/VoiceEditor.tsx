@@ -15,10 +15,14 @@ type VoiceEditorProps = {
 }
 
 const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
-  const [segments, changeSegmentLength, devideSegment, addControlPoint] = useSegments(props.segments, props.onSegmentsChanged);
+  const [segments, changeSegmentLength, devideSegment, addControlPoint, moveControlPoint] = useSegments(props.segments, props.onSegmentsChanged);
   const handleSegmentChange = (index: number, width: number) => {
     changeSegmentLength(index, width * props.msPerPixel);
   }
+  const handleControlPointMove = (sIndex: number) => (index: number, position: number, ratio: number) => {
+    moveControlPoint(sIndex)(index, position, ratio);
+  }
+
   return (
     <>
       {
@@ -38,7 +42,8 @@ const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
                   <PartialControlChangeView width={Math.floor(s.msLength/props.msPerPixel)} height={240}
                     axisColor="#000000" backgroundColor="#ffffff" controlPointColor="#000000" key={`pccv-${i}`}
                     fetcher={() => s.f0ControlChange}
-                    onCtonrolPointAdd={addControlPoint(i)}
+                    onControlPointAdd={addControlPoint(i)}
+                    onControlPointMove={handleControlPointMove(i)}
                     minRatio={-1} maxRatio={1}
                   />
                   <div style={{height: "1px", backgroundColor: "black"}} />

@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { addControlPoint } from "../data/ControlChanges";
+import { addControlPoint, moveControlPoint } from "../data/ControlChanges";
 import { devideSegment, Segments } from "../data/Segments";
 
 export const useSegments: (_segments: Segments, onSegmentChanged?: (s: Segments) => void) => [
   Segments,
   (index: number, msLength: number) => void,
   (index: number, ratio: number) => void,
-  (index: number) => (position: number) => void
+  (index: number) => (position: number) => void,
+  (ccIndex: number) => (cpIndex: number, position: number, ratio: number) => void
 ] = (_segments, onSegmentChanged) => {
   const [segments, setSegments] = useState(_segments)
   const changeSegmentLength = (index: number, msLength: number) => {
@@ -38,5 +39,12 @@ export const useSegments: (_segments: Segments, onSegmentChanged?: (s: Segments)
     if(onSegmentChanged) onSegmentChanged(s);
     setSegments(s);
   }
-  return [segments, changeSegmentLength, _devideSegment, _addControlPoint];
+  const _moveContorlPoint = (sIndex: number) => {
+    const f = moveControlPoint(segments, sIndex);
+    return (cpIndex: number, position: number, ratio: number) => {
+      const s = f(cpIndex, position, ratio);
+      setSegments(s);
+    }
+  }
+  return [segments, changeSegmentLength, _devideSegment, _addControlPoint, _moveContorlPoint];
 }

@@ -17,7 +17,7 @@ type PartialControlChangeViewProps = {
   backgroundColor: string;
   onControlPointMove?: (index: number, position: number, ratio: number) => void
   onControlPointChange?: (index: number, position: number, ratio: number) => void
-  onCtonrolPointAdd?: (position: number) => void
+  onControlPointAdd?: (position: number) => void
 }
 
 const PartialControlChangeView: React.FC<PartialControlChangeViewProps> = (props) => {
@@ -47,7 +47,7 @@ const PartialControlChangeView: React.FC<PartialControlChangeViewProps> = (props
   const handlePointAdd = (e: React.DragEvent<HTMLDivElement>) => {
     e.stopPropagation();
     const x = e.clientX / props.width;
-    if(props.onCtonrolPointAdd) props.onCtonrolPointAdd(x);
+    if(props.onControlPointAdd) props.onControlPointAdd(x);
   }
   return (
     <div className="waveform-view" style={{flexShrink: 0, position: "relative", border: "0px", width: `100%`, height: `${props.height}px`}} onDoubleClick={handlePointAdd}>

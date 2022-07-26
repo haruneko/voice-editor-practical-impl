@@ -1,3 +1,5 @@
+import { Segments } from "./Segments";
+
 export type ControlPoint = {
   position: number;
   ratio: number;
@@ -40,18 +42,18 @@ export const addControlPoint = (cc: ControlChange, position: number) => {
   return r;
 }
 
-export const moveControlPoint = (ccs: ControlChanges, ccIndex: number) => (cpIndex: number) => (position: number, ratio: number) => {
-  if(ccIndex < 0 || ccs.length <= ccIndex) return;
-  if(cpIndex < 0 || ccs[ccIndex].length <= cpIndex) return;
-  const result = structuredClone(ccs);
-  if(cpIndex === 0 && ccIndex !== 0) {
-    result[ccIndex][0] = {position: 0, ratio: ratio};
-    result[ccIndex - 1][ccs[ccIndex - 1].length - 1] = {position: 1, ratio: ratio}
-  } else if(cpIndex === ccs[ccIndex].length - 1 && ccIndex < ccs.length - 1) {
-    result[ccIndex][ccs[ccIndex].length - 1] = {position: 1, ratio: ratio};
-    result[ccIndex + 1][0] = {position: 0, ratio: ratio};
+export const moveControlPoint = (segments: Segments, sIndex: number) => (cpIndex: number, position: number, ratio: number) => {
+  if(sIndex < 0 || segments.length <= sIndex) return segments;
+  if(cpIndex < 0 || segments[sIndex].f0ControlChange.length <= cpIndex) return segments;
+  const result: Segments = structuredClone(segments);
+  if(cpIndex === 0 && sIndex !== 0) {
+    result[sIndex].f0ControlChange[0] = {position: 0, ratio: ratio};
+    result[sIndex - 1].f0ControlChange[segments[sIndex - 1].f0ControlChange.length - 1] = {position: 1, ratio: ratio}
+  } else if(cpIndex === segments[sIndex].f0ControlChange.length - 1 && sIndex < segments.length - 1) {
+    result[sIndex].f0ControlChange[segments[sIndex].f0ControlChange.length - 1] = {position: 1, ratio: ratio};
+    result[sIndex + 1].f0ControlChange[0] = {position: 0, ratio: ratio};
   } else {
-    result[ccIndex][cpIndex] = {position: position, ratio: ratio};
+    result[sIndex].f0ControlChange[cpIndex] = {position: position, ratio: ratio};
   }
   return result;
 }
