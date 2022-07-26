@@ -28,7 +28,7 @@ const App = () => {
         msBegin: 0,
         msEnd: waveform.msLength(),
         msLength: waveform.msLength(),
-        f0ControlChange: [{position: 0, ratio: 1}, {position: 1, ratio: 1}]
+        f0ControlChange: [{position: 0, ratio: 0}, {position: 1, ratio: 0}]
       } ],
     });
     previousState?.waveform.delete();

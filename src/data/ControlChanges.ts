@@ -27,6 +27,19 @@ export const devideControlChange = (cc: ControlChange, position: number) => {
   return [front, rear];
 }
 
+export const addControlPoint = (cc: ControlChange, position: number) => {
+  const r: ControlChange = [];
+  let i = 0;
+  for(; i < cc.length && cc[i].position < position; i++) {
+    r.push(cc[i]);
+  }
+  r.push({position: position, ratio: valueAt(cc, position)});
+  for(; i < cc.length; i++) {
+    r.push(cc[i]);
+  }
+  return r;
+}
+
 export const moveControlPoint = (ccs: ControlChanges, ccIndex: number) => (cpIndex: number) => (position: number, ratio: number) => {
   if(ccIndex < 0 || ccs.length <= ccIndex) return;
   if(cpIndex < 0 || ccs[ccIndex].length <= cpIndex) return;
