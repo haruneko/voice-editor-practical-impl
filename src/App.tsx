@@ -5,15 +5,12 @@ import useUzume from "./hooks/useUzume"
 import VoiceLoader from './components/VoiceLoader';
 import VoiceEditor from './components/VoiceEditor';
 import { Segments } from './data/Segments';
-import { ControlChanges } from './data/ControlChanges';
 
 type AppState = {
   waveform: uzumejs.Waveform;
   spectrogram: uzumejs.Spectrogram;
   msPerPixel: number;
   segments: Segments;
-  f0ControlChanges: ControlChanges;
-  genControlChanges: ControlChanges;
 }
 
 const App = () => {
@@ -30,10 +27,9 @@ const App = () => {
       segments: [ {
         msBegin: 0,
         msEnd: waveform.msLength(),
-        msLength: waveform.msLength()
+        msLength: waveform.msLength(),
+        f0ControlChange: [{position: 0, ratio: 1}, {position: 1, ratio: 1}]
       } ],
-      f0ControlChanges: [],
-      genControlChanges: []
     });
     previousState?.waveform.delete();
     previousState?.spectrogram.delete();

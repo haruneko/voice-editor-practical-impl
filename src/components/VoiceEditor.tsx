@@ -37,7 +37,7 @@ const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
                   <div style={{height: "1px", backgroundColor: "black"}} />
                   <PartialControlChangeView width={Math.floor(s.msLength/props.msPerPixel)} height={240}
                     axisColor="#000000" backgroundColor="#ffffff" controlPointColor="#000000" key={`pccv-${i}`}
-                    fetcher={() => [{position: 0, ratio: 0}, {position: 0.33, ratio: 0.75}, {position: 0.66, ratio: -0.75}, {position: 1, ratio: 0}]}
+                    fetcher={() => s.f0ControlChange}
                     minRatio={-1} maxRatio={1}
                   />
                   <div style={{height: "1px", backgroundColor: "black"}} />
