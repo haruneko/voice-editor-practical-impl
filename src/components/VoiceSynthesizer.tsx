@@ -2,15 +2,10 @@ import React, { useState } from "react"
 import * as uzumejs from "uzumejs"
 import audioBufferToWav from "audiobuffer-to-wav"
 import useUzume from "../hooks/useUzume"
-
-type Segment = {
-  msBegin: number;
-  msEnd: number;
-  msLength: number;
-}
+import { Segments } from "../data/Segments"
 
 type VoiceSynthesizerProps = {
-  segments: Segment[];
+  segments: Segments;
   spectrogram: uzumejs.Spectrogram;
   mode: "play" | "save"
 }
