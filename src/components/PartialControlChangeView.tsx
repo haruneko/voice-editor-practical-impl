@@ -8,6 +8,7 @@ type ControlPoint = {
 
 type PartialControlChangeViewProps = {
   fetcher: () => ControlPoint[];
+  left: number;
   width: number;
   height: number;
   maxRatio: number;
@@ -46,7 +47,7 @@ const PartialControlChangeView: React.FC<PartialControlChangeViewProps> = (props
   }
   const handlePointAdd = (e: React.DragEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    const x = e.clientX / props.width;
+    const x = (e.clientX - props.left) / props.width;
     if(props.onControlPointAdd) props.onControlPointAdd(x);
   }
   return (

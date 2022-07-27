@@ -7,7 +7,8 @@ export const useSegments: (_segments: Segments, onSegmentChanged?: (s: Segments)
   (index: number, msLength: number) => void,
   (index: number, ratio: number) => void,
   (index: number) => (position: number) => void,
-  (ccIndex: number) => (cpIndex: number, position: number, ratio: number) => void
+  (ccIndex: number) => (cpIndex: number, position: number, ratio: number) => void,
+  (ccIndex: number) => (cpIndex: number, position: number, ratio: number) => void,
 ] = (_segments, onSegmentChanged) => {
   const [segments, setSegments] = useState(_segments)
   const changeSegmentLength = (index: number, msLength: number) => {
@@ -44,7 +45,15 @@ export const useSegments: (_segments: Segments, onSegmentChanged?: (s: Segments)
     return (cpIndex: number, position: number, ratio: number) => {
       const s = f(cpIndex, position, ratio);
       setSegments(s);
+      return s;
     }
   }
-  return [segments, changeSegmentLength, _devideSegment, _addControlPoint, _moveContorlPoint];
+  const _changeControlPoint = (sIndex: number) => {
+    const f = _moveContorlPoint(sIndex);
+    return (cpIndex: number, position: number, ratio: number) => {
+      const s: Segments = f(cpIndex, position, ratio);
+      if(onSegmentChanged) onSegmentChanged(s);
+    }
+  } 
+  return [segments, changeSegmentLength, _devideSegment, _addControlPoint, _moveContorlPoint, _changeControlPoint];
 }

@@ -15,14 +15,14 @@ type VoiceEditorProps = {
 }
 
 const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
-  const [segments, changeSegmentLength, devideSegment, addControlPoint, moveControlPoint] = useSegments(props.segments, props.onSegmentsChanged);
+  const [segments, changeSegmentLength, devideSegment, addControlPoint, moveControlPoint, changeControlPoint] = useSegments(props.segments, props.onSegmentsChanged);
   const handleSegmentChange = (index: number, width: number) => {
     changeSegmentLength(index, width * props.msPerPixel);
   }
-  const handleControlPointMove = (sIndex: number) => (index: number, position: number, ratio: number) => {
-    moveControlPoint(sIndex)(index, position, ratio);
-  }
+  const handleControlPointMove = (sIndex: number) => (index: number, position: number, ratio: number) => moveControlPoint(sIndex)(index, position, ratio);
+  const handleControlPointChange = (sIndex: number) => (index: number, position: number, ratio: number) => changeControlPoint(sIndex)(index, position, ratio);
 
+  let left = 0;
   return (
     <>
       {
@@ -34,7 +34,8 @@ const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
               onElementDevided={devideSegment}
               resizable={true}>
             {
-              segments.map((s, i) =>
+              segments.map((s, i) => {
+              const result = (
                 <>
                   <PartialWaveformView msStart={s.msBegin} msEnd={s.msEnd} fetcher={() => props.waveform} width={Math.floor(s.msLength / props.msPerPixel)} height={240}
                     lightColor="#888888" darkColor="#000000" axisColor="#000000" backgroundColor="#ffffff" key={`pwv-${i}`}/>
@@ -44,10 +45,15 @@ const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
                     fetcher={() => s.f0ControlChange}
                     onControlPointAdd={addControlPoint(i)}
                     onControlPointMove={handleControlPointMove(i)}
-                    minRatio={-1} maxRatio={1}
+                    onControlPointChange={handleControlPointChange(i)}
+                    minRatio={-1} maxRatio={1} left={left}
                   />
                   <div style={{height: "1px", backgroundColor: "black"}} />
                 </>
+              )
+              left += s.msLength / props.msPerPixel + 1;
+              return result;
+              }
             )}
           </Splitter>
       }
