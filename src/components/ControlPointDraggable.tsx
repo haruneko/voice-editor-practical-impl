@@ -36,22 +36,22 @@ const ControlPoinrDraggable: React.FC<ControlPointDraggableProps> = (props) => {
   const yWithMinMax: (_: number) => number = (y) => Math.max(props.minY, Math.min(props.maxY, y));
   const handleOnDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    setPreviousPosition({x: e.pageX, y: e.pageY});
+    setPreviousPosition({x: e.clientX, y: e.clientY});
   }
   const handleOnDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.stopPropagation();
     if(previousPosition === undefined) return handleOnDragStart(e);
     if(props.onPointDragged !== undefined) props.onPointDragged(
-      xWithMinMax(props.x + (e.pageX - previousPosition.x) / props.clientWidth),
-      yWithMinMax(props.y + (e.pageY - previousPosition.y) / props.clientHeight));
-    setPreviousPosition({x: e.pageX, y: e.pageY});
+      xWithMinMax(props.x + (e.clientX - previousPosition.x) / props.clientWidth),
+      yWithMinMax(props.y + (e.clientY - previousPosition.y) / props.clientHeight));
+    setPreviousPosition({x: e.clientX, y: e.clientY});
   }
   const handleOnDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
     e.stopPropagation();
     if(previousPosition === undefined) return;
     if(props.onPointChanged !== undefined) props.onPointChanged(
-      xWithMinMax(props.x + (e.pageX - previousPosition.x) / props.clientWidth),
-      yWithMinMax(props.y + (e.pageY - previousPosition.y) / props.clientHeight));
+      xWithMinMax(props.x + (e.clientX - previousPosition.x) / props.clientWidth),
+      yWithMinMax(props.y + (e.clientY - previousPosition.y) / props.clientHeight));
     setPreviousPosition(undefined);
   }
   return  <ControlPointStyled draggable={true} x={xWithMinMax(props.x)} y={yWithMinMax(props.y)} color={props.color}

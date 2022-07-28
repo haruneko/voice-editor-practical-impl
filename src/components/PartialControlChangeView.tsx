@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react"
+import useMeasuredCanvas from "../hooks/useMeasuredCanvas";
 import ControlPoinrDraggable from "./ControlPointDraggable";
 
 type ControlPoint = {
@@ -26,13 +27,12 @@ const PartialControlChangeView: React.FC<PartialControlChangeViewProps> = (props
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const yPercentageOf = useCallback((ratio: number) => 1.0 - (ratio - props.minRatio) / (props.maxRatio - props.minRatio), [props.maxRatio, props.minRatio]);
   const ratioOf = (y: number) => props.maxRatio * (1 - y) + props.minRatio * y;
+  useMeasuredCanvas(canvasRef, props);
 
   useEffect(() => {
     if(canvasRef.current === null) return;
     const context = canvasRef.current.getContext("2d");
     if(context === null) return;
-    context.fillStyle = props.backgroundColor;
-    context.fillRect(0, 0, props.width, props.height);
     context.strokeStyle = props.axisColor;
     context.beginPath();
     context.moveTo(controlPoints[0].position * props.width, yPercentageOf(controlPoints[0].ratio) * props.height);
