@@ -53,6 +53,7 @@ export const useSegments: (_segments: Segments, onSegmentChanged?: (s: Segments)
     return (cpIndex: number, position: number, ratio: number) => {
       const s: Segments = f(cpIndex, position, ratio);
       if(onSegmentChanged) onSegmentChanged(s);
+      setSegments(s)
     }
   } 
   return [segments, changeSegmentLength, _devideSegment, _addControlPoint, _moveContorlPoint, _changeControlPoint];

@@ -57,9 +57,9 @@ const PartialControlChangeView: React.FC<PartialControlChangeViewProps> = (props
         <ControlPoinrDraggable
           x={p.position}
           y={yPercentageOf(p.ratio)}
-          minX={i <= 0 ? p.position : controlPoints[i - 1].position}
+          minX={i <= 0 || i >= controlPoints.length - 1 ? p.position : controlPoints[i - 1].position}
           minY={0}
-          maxX={i >= controlPoints.length - 1 ? p.position : controlPoints[i + 1].position}
+          maxX={i <= 0 || i >= controlPoints.length - 1 ? p.position : controlPoints[i + 1].position}
           maxY={1}
           clientWidth={props.width}
           clientHeight={props.height}

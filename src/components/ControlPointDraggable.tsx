@@ -53,7 +53,7 @@ const ControlPoinrDraggable: React.FC<ControlPointDraggableProps> = (props) => {
       xWithMinMax(props.x + (e.pageX - previousPosition.x) / props.clientWidth),
       yWithMinMax(props.y + (e.pageY - previousPosition.y) / props.clientHeight));
     setPreviousPosition(undefined);
-    }
+  }
   return  <ControlPointStyled draggable={true} x={xWithMinMax(props.x)} y={yWithMinMax(props.y)} color={props.color}
             onDragStart={handleOnDragStart}
             onDrag={handleOnDrag}
