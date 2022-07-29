@@ -12,17 +12,15 @@ type VoiceSynthesizerProps = {
 
 const calculateWaveArray = (u: uzumejs.UzumeJs, props: VoiceSynthesizerProps) => {
   const toBeDeleted = new Array<{delete: () => void}>();
-  const ltams = props.segments.map(v => new u.LinearTimeAxisMap(v.msBegin, v.msEnd, v.msLength))
-  const sss = ltams.map(v => new u.StretchedPartialSpectrogram(props.spectrogram, v));
-  const sv = sss.reduce((prev: uzumejs.SpectrogramVector, cur) => { prev.push_back(cur); return prev;}, new u.SpectrogramVector());
-  const asa = u.ArraySpectrogramAggregator.from(sv);
-  const synth = new u.SynthesizeWaveformWithWORLD();
-  const out = new u.Waveform(Math.floor(asa.msLength() / 1000.0 * 44100), 44100);
+  function addDeletable<T extends {delete: () => void}>(t: T) { toBeDeleted.push(t); return t; }
+  const asa = addDeletable(u.ArraySpectrogramAggregator.from(
+    props.segments.map(v => addDeletable(new u.LinearTimeAxisMap(v.msBegin, v.msEnd, v.msLength)))
+      .map(v => addDeletable(new u.StretchedPartialSpectrogram(props.spectrogram, v)))
+      .reduce((prev: uzumejs.SpectrogramVector, cur) => { prev.push_back(cur); return prev;}, addDeletable(new u.SpectrogramVector()))));
+  const synth = addDeletable(new u.SynthesizeWaveformWithWORLD());
+  const out = addDeletable(new u.Waveform(Math.floor(asa.msLength() / 1000.0 * 44100), 44100));
   synth.synthesize(out, asa);
   const result = u.ArrayFromWaveform(out);
-  ltams.forEach(v => toBeDeleted.push(v));
-  sss.forEach(v => toBeDeleted.push(v));
-  toBeDeleted.push(sv, asa, synth, out);
   toBeDeleted.forEach(v => v.delete());
   return result;
 }
