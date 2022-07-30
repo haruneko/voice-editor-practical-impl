@@ -26,6 +26,7 @@ type ControlPointDraggableProps = {
   clientWidth: number;
   clientHeight: number;
   color: string;
+  index: number;
   onPointChanged?: (x: number, y: number) => void;
   onPointDragged?: (x: number, y: number) => void;
 }
@@ -58,6 +59,7 @@ const ControlPoinrDraggable: React.FC<ControlPointDraggableProps> = (props) => {
             onDragStart={handleOnDragStart}
             onDrag={handleOnDrag}
             onDragEnd={handleOnDragEnd}
+            key={`cps-${props.index}`}
           />
 }
 

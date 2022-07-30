@@ -3,7 +3,8 @@ import { Waveform } from "uzumejs"
 import useUzume from "../hooks/useUzume"
 
 type VoiceLoaderProps = {
-  onVoiceLoaded: (waveform: Waveform) => void;
+  onVoiceLoadStart?: () => void;
+  onVoiceLoadEnd?: (waveform: Waveform) => void;
 }
 
 const VoiceLoader: React.FC<VoiceLoaderProps> = (props) => {
@@ -14,13 +15,14 @@ const VoiceLoader: React.FC<VoiceLoaderProps> = (props) => {
     const file = e?.target?.files?.item(0);
     if(file !== null && file !== undefined) {
       setDisabled(true);
+      if(props.onVoiceLoadStart) props.onVoiceLoadStart();
       const buffer = await context.decodeAudioData(
         await file.arrayBuffer()
       );
       const u = await uzume;
       const maybeWaveform = u.CreateWaveformFrom(buffer.getChannelData(0), buffer.sampleRate);
       if(maybeWaveform !== null) {
-        props.onVoiceLoaded(maybeWaveform);
+        if(props.onVoiceLoadEnd) props.onVoiceLoadEnd(maybeWaveform);
       }
       setDisabled(false);
     }

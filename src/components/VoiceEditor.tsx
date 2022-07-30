@@ -39,7 +39,7 @@ const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
                 <>
                   <PartialWaveformView msStart={s.msBegin} msEnd={s.msEnd} fetcher={() => props.waveform} width={Math.floor(s.msLength / props.msPerPixel)} height={240}
                     lightColor="#888888" darkColor="#000000" axisColor="#000000" backgroundColor="#ffffff" key={`pwv-${i}`}/>
-                  <div style={{height: "1px", backgroundColor: "black"}} />
+                  <div style={{height: "1px", backgroundColor: "black"}} key={`border-wave-and-cc-${i}`}/>
                   <PartialControlChangeView width={Math.floor(s.msLength/props.msPerPixel)} height={240}
                     axisColor="#000000" backgroundColor="#ffffff" controlPointColor="#000000" key={`pccv-${i}`}
                     fetcher={() => s.f0ControlChange}
@@ -48,7 +48,7 @@ const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
                     onControlPointChange={handleControlPointChange(i)}
                     minRatio={-1} maxRatio={1} left={left}
                   />
-                  <div style={{height: "1px", backgroundColor: "black"}} />
+                  <div style={{height: "1px", backgroundColor: "black"}} key={`border-bottom-${i}`}/>
                 </>
               )
               left += s.msLength / props.msPerPixel + 1;

@@ -17,7 +17,8 @@ const App = () => {
   const [appState, setAppState] = useState<AppState>();
   const uzume = useUzume();
 
-  const handleVoiceLoad = async (waveform: uzumejs.Waveform) => {
+  const handleVoiceLoadStart = () => setAppState(undefined);
+  const handleVoiceLoadEnd = async (waveform: uzumejs.Waveform) => {
     const u = await uzume;
     const previousState = appState;
     setAppState({
@@ -39,12 +40,12 @@ const App = () => {
   }
   return (
     <div className="App">
-      <VoiceLoader onVoiceLoaded={handleVoiceLoad} />
-      { appState && <VoiceSynthesizer segments={appState.segments} spectrogram={appState.spectrogram} mode={"play"}/> }
-      { appState && <VoiceSynthesizer segments={appState.segments} spectrogram={appState.spectrogram} mode={"save"}/> }
+      <VoiceLoader onVoiceLoadStart={handleVoiceLoadStart} onVoiceLoadEnd={handleVoiceLoadEnd} />
+      { appState && <VoiceSynthesizer segments={appState.segments} spectrogram={appState.spectrogram} mode={"play"} key="button-play"/> }
+      { appState && <VoiceSynthesizer segments={appState.segments} spectrogram={appState.spectrogram} mode={"save"} key="button-save"/> }
       {
         appState &&
-          <VoiceEditor waveform={appState.waveform} msPerPixel={2} segments={appState.segments} onSegmentsChanged={handleSegmentsChange}
+          <VoiceEditor waveform={appState.waveform} msPerPixel={2} segments={appState.segments} onSegmentsChanged={handleSegmentsChange} key="editor"
           />
       }
     </div>

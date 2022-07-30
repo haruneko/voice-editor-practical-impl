@@ -11,7 +11,7 @@ type PartialWaveformProps = {
     axisColor: string;
     backgroundColor: string;
     lightColor: string;
-    darkColor: string
+    darkColor: string;
 }
 
 const drawLine = (x1: number, y1: number, x2: number, y2: number, context: CanvasRenderingContext2D) => {

@@ -3,6 +3,7 @@ import * as uzumejs from "uzumejs"
 import audioBufferToWav from "audiobuffer-to-wav"
 import useUzume from "../hooks/useUzume"
 import { Segments } from "../data/Segments"
+import { ControlChange } from "../data/ControlChanges"
 
 type VoiceSynthesizerProps = {
   segments: Segments;
@@ -10,13 +11,27 @@ type VoiceSynthesizerProps = {
   mode: "play" | "save"
 }
 
+const convertControlChange: (cc: ControlChange, u: uzumejs.UzumeJs) => uzumejs.ControlChange = (cc, u) => {
+  const vec = new u.VectorControlPoint();
+  cc.forEach(cp => vec.push_back([cp.position, cp.ratio]));
+  const result = new u.ControlChange(vec);
+  return result;
+}
+
 const calculateWaveArray = (u: uzumejs.UzumeJs, props: VoiceSynthesizerProps) => {
   const toBeDeleted = new Array<{delete: () => void}>();
   function addDeletable<T extends {delete: () => void}>(t: T) { toBeDeleted.push(t); return t; }
   const asa = addDeletable(u.ArraySpectrogramAggregator.from(
-    props.segments.map(v => addDeletable(new u.LinearTimeAxisMap(v.msBegin, v.msEnd, v.msLength)))
-      .map(v => addDeletable(new u.StretchedPartialSpectrogram(props.spectrogram, v)))
-      .reduce((prev: uzumejs.SpectrogramVector, cur) => { prev.push_back(cur); return prev;}, addDeletable(new u.SpectrogramVector()))));
+    props.segments.map(v => {
+        return {
+          timeAxis: addDeletable(new u.LinearTimeAxisMap(v.msBegin, v.msEnd, v.msLength)),
+          cc: addDeletable(convertControlChange(v.f0ControlChange, u))
+        };
+      }).map(v =>
+        addDeletable(new u.F0EditedSpectrogram(
+          addDeletable(new u.StretchedPartialSpectrogram(props.spectrogram, v.timeAxis)), v.cc, u.SynthType.Log))
+      ).reduce((prev: uzumejs.SpectrogramVector, cur) => { prev.push_back(cur); return prev;}, addDeletable(new u.SpectrogramVector())))
+  );
   const synth = addDeletable(new u.SynthesizeWaveformWithWORLD());
   const out = addDeletable(new u.Waveform(Math.floor(asa.msLength() / 1000.0 * 44100), 44100));
   synth.synthesize(out, asa);
