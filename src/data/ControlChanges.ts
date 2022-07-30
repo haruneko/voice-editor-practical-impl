@@ -1,4 +1,4 @@
-import { Segments } from "./Segments";
+import { Segment, Segments } from "./Segments";
 
 export type ControlPoint = {
   position: number;
@@ -42,18 +42,19 @@ export const addControlPoint = (cc: ControlChange, position: number) => {
   return r;
 }
 
-export const moveControlPoint = (segments: Segments, sIndex: number) => (cpIndex: number, position: number, ratio: number) => {
+export const moveControlPoint = (segments: Segments, sIndex: number, selectedControlChange: "F0" | "GEN") => (cpIndex: number, position: number, ratio: number) => {
   if(sIndex < 0 || segments.length <= sIndex) return segments;
-  if(cpIndex < 0 || segments[sIndex].f0ControlChange.length <= cpIndex) return segments;
+  const currentCC = (s: Segment) => selectedControlChange === "F0" ? s.f0ControlChange : s.genControlChange
+  if(cpIndex < 0 || currentCC(segments[sIndex]).length <= cpIndex) return segments;
   const result: Segments = structuredClone(segments);
   if(cpIndex === 0 && sIndex !== 0) {
-    result[sIndex].f0ControlChange[0] = {position: 0, ratio: ratio};
-    result[sIndex - 1].f0ControlChange[segments[sIndex - 1].f0ControlChange.length - 1] = {position: 1, ratio: ratio}
-  } else if(cpIndex === segments[sIndex].f0ControlChange.length - 1 && sIndex < segments.length - 1) {
-    result[sIndex].f0ControlChange[segments[sIndex].f0ControlChange.length - 1] = {position: 1, ratio: ratio};
-    result[sIndex + 1].f0ControlChange[0] = {position: 0, ratio: ratio};
+    currentCC(result[sIndex])[0] = {position: 0, ratio: ratio};
+    currentCC(result[sIndex - 1])[currentCC(segments[sIndex - 1]).length - 1] = {position: 1, ratio: ratio}
+  } else if(cpIndex === currentCC(segments[sIndex]).length - 1 && sIndex < segments.length - 1) {
+    currentCC(result[sIndex])[currentCC(segments[sIndex]).length - 1] = {position: 1, ratio: ratio};
+    currentCC(result[sIndex + 1])[0] = {position: 0, ratio: ratio};
   } else {
-    result[sIndex].f0ControlChange[cpIndex] = {position: position, ratio: ratio};
+    currentCC(result[sIndex])[cpIndex] = {position: position, ratio: ratio};
   }
   return result;
 }

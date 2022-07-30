@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { addControlPoint, moveControlPoint } from "../data/ControlChanges";
-import { devideSegment, Segments } from "../data/Segments";
+import { addControlPoint, ControlChange, moveControlPoint } from "../data/ControlChanges";
+import { devideSegment, Segment, Segments } from "../data/Segments";
 
 export const useSegments: (_segments: Segments, onSegmentChanged?: (s: Segments) => void) => [
   Segments,
@@ -9,8 +9,13 @@ export const useSegments: (_segments: Segments, onSegmentChanged?: (s: Segments)
   (index: number) => (position: number) => void,
   (ccIndex: number) => (cpIndex: number, position: number, ratio: number) => void,
   (ccIndex: number) => (cpIndex: number, position: number, ratio: number) => void,
+  "F0" | "GEN",
+  (selectedControlChange: "F0" | "GEN") => void,
 ] = (_segments, onSegmentChanged) => {
+  const [selectedControlChange, setSelectedControlChnage] = useState<"F0" | "GEN">("F0");
   const [segments, setSegments] = useState(_segments)
+  const currentCC = (s: Segment) => selectedControlChange === "F0" ? s.f0ControlChange : s.genControlChange
+  const setCC = (s: Segment, cc: ControlChange) => {if(selectedControlChange === "F0") s.f0ControlChange = cc; else s.genControlChange = cc;}
   const changeSegmentLength = (index: number, msLength: number) => {
     if(index < 0 || segments.length <= index) return;
     const s = Array.from(segments);
@@ -35,13 +40,13 @@ export const useSegments: (_segments: Segments, onSegmentChanged?: (s: Segments)
   const _addControlPoint = (index: number) => (position: number) => {
     if(segments.length === 0) return;
     const s: Segments = structuredClone(segments);
-    const cc = addControlPoint(s[index].f0ControlChange, position);
-    s[index].f0ControlChange = cc;
+    const cc = addControlPoint(currentCC(s[index]), position);
+    setCC(s[index], cc);
     if(onSegmentChanged) onSegmentChanged(s);
     setSegments(s);
   }
   const _moveContorlPoint = (sIndex: number) => {
-    const f = moveControlPoint(segments, sIndex);
+    const f = moveControlPoint(segments, sIndex, selectedControlChange);
     return (cpIndex: number, position: number, ratio: number) => {
       const s = f(cpIndex, position, ratio);
       setSegments(s);
@@ -56,5 +61,5 @@ export const useSegments: (_segments: Segments, onSegmentChanged?: (s: Segments)
       setSegments(s)
     }
   } 
-  return [segments, changeSegmentLength, _devideSegment, _addControlPoint, _moveContorlPoint, _changeControlPoint];
+  return [segments, changeSegmentLength, _devideSegment, _addControlPoint, _moveContorlPoint, _changeControlPoint, selectedControlChange, setSelectedControlChnage];
 }
