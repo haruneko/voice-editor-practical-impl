@@ -51,7 +51,7 @@ const PartialControlChangeView: React.FC<PartialControlChangeViewProps> = (props
     if(props.onControlPointAdd) props.onControlPointAdd(x);
   }
   return (
-    <div className="waveform-view" style={{flexShrink: 0, position: "relative", border: "0px", width: `100%`, height: `${props.height}px`}} onDoubleClick={handlePointAdd} key={`waveform-view-${props.left}`}>
+    <div className="waveform-view" style={{position: "relative", border: "0px", width: `100%`, height: `${props.height}px`}} onDoubleClick={handlePointAdd} key={`waveform-view-${props.left}`}>
       <canvas width={props.width} height = {props.height} ref={canvasRef} style={{width: "100%", height: `${props.height}px`}} key={`wavefor-view-canvas-${props.left}`}/>
       { controlPoints.map((p, i) =>
         <ControlPoinrDraggable
