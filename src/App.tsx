@@ -46,7 +46,7 @@ const App = () => {
       { appState && <VoiceSynthesizer segments={appState.segments} spectrogram={appState.spectrogram} mode={"save"} key="button-save"/> }
       {
         appState &&
-          <VoiceEditor waveform={appState.waveform} msPerPixel={2} segments={appState.segments} onSegmentsChanged={handleSegmentsChange} key="editor"
+          <VoiceEditor waveform={appState.waveform} msPerPixel={2} segments={appState.segments} f0At={(ms: number) => appState.spectrogram.f0At(ms)} onSegmentsChanged={handleSegmentsChange} key="editor"
           />
       }
     </div>

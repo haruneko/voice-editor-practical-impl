@@ -24,7 +24,7 @@ const Splitter = (props: React.PropsWithChildren<SplitterProps>) => {
   return  <div style={{overflowX: "scroll", display: "flex", position: "relative"}}>
             {props.children && Array.isArray(props.children) && props.children.length === props.elements.length &&
               props.children.map((v, i) => {
-                x += props.elements[i].width;
+                x += props.elements[i].width + 1;
                 return <SplitterWrapper
                     x={x}
                     width={props.elements[i].width}

@@ -1,21 +1,23 @@
-import React, { useState } from "react"
+import React from "react"
 import * as uzumejs from "uzumejs";
 import { Segments } from "../data/Segments";
 import { useSegments } from "../hooks/useSegments";
 import PartialControlChangeView from "./PartialControlChangeView";
 import PartialWaveformView from "./PartialWaveformView";
 import Splitter from "./Splitter";
+import VoiceVUVDevider from "./VoiceVUVDevider";
 
 
 type VoiceEditorProps = {
   waveform: uzumejs.Waveform;
   msPerPixel: number;
   segments: Segments;
+  f0At: (ms: number) => number;
   onSegmentsChanged?: (segments: Segments) => void;
 }
 
 const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
-  const [segments, changeSegmentLength, devideSegment, addControlPoint, moveControlPoint, changeControlPoint, selectedControlChange, setSelectedControlChnage] = useSegments(props.segments, props.onSegmentsChanged);
+  const {segments, changeSegmentLength, devideSegment, addControlPoint, moveControlPoint, changeControlPoint, selectedControlChange, setSelectedControlChnage, devideSegments} = useSegments(props.segments, props.onSegmentsChanged);
   const handleSegmentChange = (index: number, width: number) => {
     changeSegmentLength(index, width * props.msPerPixel);
   }
@@ -35,6 +37,7 @@ const VoiceEditor: React.FC<VoiceEditorProps> = (props) => {
           <option value="GEN">GEN</option>
         </select>
       </div>
+      <VoiceVUVDevider segments={props.segments} f0At={props.f0At} devideSegments={devideSegments}/>
       {
         segments.length > 0 &&
           <Splitter
